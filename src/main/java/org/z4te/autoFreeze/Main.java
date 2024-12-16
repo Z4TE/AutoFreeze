@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameRule;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -12,35 +13,46 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Main extends JavaPlugin implements Listener {
 
+    private final World world = getServer().getWorld("world");
+
     @Override
     public void onEnable() {
         // Plugin startup logic
-
+        getServer().getPluginManager().registerEvents(this, this);
+        disableCycle();
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        disableCycle();
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         if (Bukkit.getOnlinePlayers().size() == 1) {
-            World world = getServer().getWorld("world");
-            assert world != null;
-            world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, true);
-            Bukkit.broadcastMessage(ChatColor.YELLOW + "Daylight cycle resumed");
-            Bukkit.getLogger().info("Daylight cycle resumed");
+            enableCycle();
+            Player player = event.getPlayer();
+            player.sendMessage(ChatColor.YELLOW + "Daylight cycle resumed");
         }
     }
 
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent event) {
         if (Bukkit.getOnlinePlayers().isEmpty()) {
-            World world = getServer().getWorld("world");
-            assert world != null;
-            world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
-            Bukkit.getLogger().info("Daylight cycle paused");
+            disableCycle();
         }
+    }
+
+    private void enableCycle() {
+        assert world != null;
+        world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, true);
+        Bukkit.getLogger().info(ChatColor.YELLOW + "Daylight cycle resumed");
+    }
+
+    private void disableCycle() {
+        assert world != null;
+        world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+        Bukkit.getLogger().info(ChatColor.YELLOW + "Daylight cycle paused");
     }
 }
