@@ -13,8 +13,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Main extends JavaPlugin implements Listener {
 
-    private final World world = getServer().getWorld("world");
-
     @Override
     public void onEnable() {
         // Plugin startup logic
@@ -39,18 +37,20 @@ public final class Main extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent event) {
-        if (Bukkit.getOnlinePlayers().isEmpty()) {
+        if (Bukkit.getOnlinePlayers().size() == 1) {
             disableCycle();
         }
     }
 
     private void enableCycle() {
+        World world = getServer().getWorld("world");
         assert world != null;
         world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, true);
         Bukkit.getLogger().info(ChatColor.YELLOW + "Daylight cycle resumed");
     }
 
     private void disableCycle() {
+        World world = getServer().getWorld("world");
         assert world != null;
         world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
         Bukkit.getLogger().info(ChatColor.YELLOW + "Daylight cycle paused");
