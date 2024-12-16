@@ -1,0 +1,4 @@
+name: AutoFreeze
+version: '1.0'
+main: org.z4te.autoFreeze.Main
+api-version: '1.21'
